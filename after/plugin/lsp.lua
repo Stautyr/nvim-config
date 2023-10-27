@@ -1,20 +1,37 @@
 local lsp = require('lsp-zero')
 
+require('mason').setup({})
+require('mason-lspconfig').setup({
+    ensure_installed = {'tsserver', 'rust_analyzer', "lua_ls", "pyright", "mypy", "ruff", "black"},
+    handlers = {
+        lsp.default_setup,
+    }
+})
+
+
+
+
 lsp.preset('recommended')
+
+lsp.nvim_workspace()
+
 
 local cmp = require('cmp')
 local cmp_select = {behavior = cmp.SelectBehavior.Select}
-local cmp_mappings = lsp.defaults.cmp_mappings({
-  ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-  ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-  ['<C-y>'] = cmp.mapping.confirm({ select = true }),
-  ['<C-Space>'] = cmp.mapping.complete(),
+cmp.setup({
+    window = {
+        completion = cmp.config.window.bordered(),
+        documentation = cmp.config.window.bordered(),
+    },
+    cmp_mappings = lsp.defaults.cmp_mappings({
+        ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
+        ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
+        ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+        ['<C-Space>'] = cmp.mapping.complete(),
+    })
 })
 
-lsp.setup_nvim_cmp({
-  mappings = cmp_mappings
-})
-lsp.on_attach(function(client, bufnr)
+local on_attach = lsp.on_attach(function(client, bufnr)
 	print("help")
   local opts = {buffer = bufnr, remap = false}
   vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
@@ -29,4 +46,13 @@ lsp.on_attach(function(client, bufnr)
   vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
 
 end)
+local capabilities = lsp.capabilities
+local lspconfig = require("lspconfig")
+lspconfig.lua_ls.setup{}
+lspconfig.pyright.setup({
+    on_attach = on_attach,
+    capabilities = capabilities,
+    filetypes = {"python"},
+})
+
 lsp.setup()

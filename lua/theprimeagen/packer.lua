@@ -6,7 +6,12 @@ vim.cmd [[packadd packer.nvim]]
 return require('packer').startup(function(use)
   -- Packer can manage itself
   use 'wbthomason/packer.nvim'
-  
+  use {
+      "neovim/nvim-lspconfig",
+      "williamboman/mason.nvim",
+      "williamboman/mason-lspconfig.nvim",
+  }
+
   use {
 	  'nvim-telescope/telescope.nvim', tag = '0.1.4',
 	  -- or                            , branch = '0.1.x',
@@ -34,5 +39,12 @@ return require('packer').startup(function(use)
 		  {'hrsh7th/cmp-nvim-lsp'},
 		  {'L3MON4D3/LuaSnip'},
 	  }
+  }
+  use {
+      "jose-elias-alvarez/null-ls.nvim",
+      ft = {"python"},
+      opts = function()
+        return require "theprimeagen.null-ls"
+      end,
   }
 end)
